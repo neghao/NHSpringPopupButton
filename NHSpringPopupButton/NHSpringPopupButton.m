@@ -60,10 +60,8 @@
         
         i ++;
     }
-
-    if (self.homeButtonView != nil) {
-        [self bringSubviewToFront:self.homeButtonView];
-    }
+    
+        [self bringSubviewToFront:self.homeButton];
 }
 
 - (void)addButton:(UIButton *)button {
@@ -83,6 +81,7 @@
     if (self.delegate && [self.delegate respondsToSelector:@selector(NHSpringPopupButtonDidClickSubButton:)]) {
         [self.delegate NHSpringPopupButtonDidClickSubButton:weakButton];
     }
+//    [self dismissButtons];
 }
 
 
@@ -129,30 +128,30 @@
         
         switch (self.direction) {
             case NHSpringDirectionLeft:
-                originPosition = CGPointMake(self.frame.size.width - self.homeButtonView.frame.size.width, self.frame.size.height/2.f);
-                finalPosition = CGPointMake(self.frame.size.width - self.homeButtonView.frame.size.width - button.frame.size.width/2.f - self.buttonSpacing
+                originPosition = CGPointMake(self.frame.size.width - self.homeButton.frame.size.width, self.frame.size.height/2.f);
+                finalPosition = CGPointMake(self.frame.size.width - self.homeButton.frame.size.width - button.frame.size.width/2.f - self.buttonSpacing
                                             - ((button.frame.size.width + self.buttonSpacing) * index),
                                             self.frame.size.height/2.f);
                 break;
                 
             case NHSpringDirectionRight:
-                originPosition = CGPointMake(self.homeButtonView.frame.size.width, self.frame.size.height/2.f);
-                finalPosition = CGPointMake(self.homeButtonView.frame.size.width + self.buttonSpacing + button.frame.size.width/2.f
+                originPosition = CGPointMake(self.homeButton.frame.size.width, self.frame.size.height/2.f);
+                finalPosition = CGPointMake(self.homeButton.frame.size.width + self.buttonSpacing + button.frame.size.width/2.f
                                             + ((button.frame.size.width + self.buttonSpacing) * index),
                                             self.frame.size.height/2.f);
                 break;
                 
             case NHSpringDirectionUp:
-                originPosition = CGPointMake(self.frame.size.width/2.f, self.frame.size.height - self.homeButtonView.frame.size.height);
+                originPosition = CGPointMake(self.frame.size.width/2.f, self.frame.size.height - self.homeButton.frame.size.height);
                 finalPosition = CGPointMake(self.frame.size.width/2.f,
-                                            self.frame.size.height - self.homeButtonView.frame.size.height - self.buttonSpacing - button.frame.size.height/2.f
+                                            self.frame.size.height - self.homeButton.frame.size.height - self.buttonSpacing - button.frame.size.height/2.f
                                             - ((button.frame.size.height + self.buttonSpacing) * index));
                 break;
                 
             case NHSpringDirectionDown:
-                originPosition = CGPointMake(self.frame.size.width/2.f, self.homeButtonView.frame.size.height);
+                originPosition = CGPointMake(self.frame.size.width/2.f, self.homeButton.frame.size.height);
                 finalPosition = CGPointMake(self.frame.size.width/2.f,
-                                            self.homeButtonView.frame.size.height + self.buttonSpacing + button.frame.size.height/2.f
+                                            self.homeButton.frame.size.height + self.buttonSpacing + button.frame.size.height/2.f
                                             + ((button.frame.size.height + self.buttonSpacing) * index));
                 break;
                 
@@ -248,19 +247,19 @@
         
         switch (self.direction) {
             case NHSpringDirectionLeft:
-                finalPosition = CGPointMake(self.frame.size.width - self.homeButtonView.frame.size.width, self.frame.size.height/2.f);
+                finalPosition = CGPointMake(self.frame.size.width - self.homeButton.frame.size.width, self.frame.size.height/2.f);
                 break;
                 
             case NHSpringDirectionRight:
-                finalPosition = CGPointMake(self.homeButtonView.frame.size.width, self.frame.size.height/2.f);
+                finalPosition = CGPointMake(self.homeButton.frame.size.width, self.frame.size.height/2.f);
                 break;
                 
             case NHSpringDirectionUp:
-                finalPosition = CGPointMake(self.frame.size.width/2.f, self.frame.size.height - self.homeButtonView.frame.size.height);
+                finalPosition = CGPointMake(self.frame.size.width/2.f, self.frame.size.height - self.homeButton.frame.size.height);
                 break;
                 
             case NHSpringDirectionDown:
-                finalPosition = CGPointMake(self.frame.size.width/2.f, self.homeButtonView.frame.size.height);
+                finalPosition = CGPointMake(self.frame.size.width/2.f, self.homeButton.frame.size.height);
                 break;
                 
             default:
@@ -287,10 +286,6 @@
 }
 
 
-
-
-
-
 #pragma mark -
 #pragma mark initialized
 
@@ -300,6 +295,7 @@
     if (self) {
         
         [self _defaultInit];
+        [self addSubview:self.homeButton];
     }
     return self;
 }
@@ -310,23 +306,35 @@
     if (self) {
         [self _defaultInit];
         _direction = direction;
-        self.homeButtonView = [self createHomeButtonView];
+        [self addSubview:self.homeButton];
     }
     return self;
 }
 
-- (UILabel *)createHomeButtonView {
-    UILabel *label = [[UILabel alloc] initWithFrame:self.bounds];
-    
-    label.text = @"Tap";
-    label.textColor = [UIColor whiteColor];
-    label.textAlignment = NSTextAlignmentCenter;
-    label.layer.cornerRadius = label.frame.size.height / 2.f;
-    label.backgroundColor =[UIColor colorWithRed:0.f green:0.f blue:0.f alpha:0.5f];
-    label.clipsToBounds = YES;
-    
-    return label;
+- (UIButton *)homeButton {
+    if (!_homeButton) {
+        UIButton *button = [[UIButton alloc] initWithFrame:self.bounds];
+        [button setTitle:@"Tap" forState:UIControlStateNormal];
+        [button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        [button setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
+        button.layer.cornerRadius = button.bounds.size.height / 2;
+        button.backgroundColor =[UIColor colorWithRed:0.f green:0.f blue:0.f alpha:0.5f];
+//        [button addTarget:self action:@selector(clickHomeButton:) forControlEvents:UIControlEventTouchUpInside];
+        button.userInteractionEnabled = NO;
+        _homeButton = button;
+    }
+    return _homeButton;
 }
+
+- (void)clickHomeButton:(UIButton *)button {
+    if (button.selected) {
+        [self dismissButtons];
+    } else {
+        [self showButtons];
+    }
+    button.selected = !button.selected;
+}
+
 
 #pragma mark -
 #pragma mark Private Methods
@@ -356,7 +364,7 @@
     if (self.tapGestureRecognizer.state == UIGestureRecognizerStateEnded) {
         CGPoint touchLocation = [self.tapGestureRecognizer locationOfTouch:0 inView:self];
         
-        if (_collapseAfterSelection && _isCollapsed == NO && CGRectContainsPoint(self.homeButtonView.frame, touchLocation) == false) {
+        if (_collapseAfterSelection && _isCollapsed == NO && CGRectContainsPoint(self.homeButton.frame, touchLocation) == false) {
             [self dismissButtons];
         }
     }
@@ -373,18 +381,18 @@
 - (void)_setTouchHighlighted:(BOOL)highlighted {
     float alphaValue = highlighted ? _highlightAlpha : _standbyAlpha;
     
-    if (self.homeButtonView.alpha == alphaValue)
+    if (self.homeButton.alpha == alphaValue)
         return;
     
     if (_animatedHighlighting) {
         [self _animateWithBlock:^{
-            if (self.homeButtonView != nil) {
-                self.homeButtonView.alpha = alphaValue;
+            if (self.homeButton != nil) {
+                self.homeButton.alpha = alphaValue;
             }
         }];
     } else {
-        if (self.homeButtonView != nil) {
-            self.homeButtonView.alpha = alphaValue;
+        if (self.homeButton != nil) {
+            self.homeButton.alpha = alphaValue;
         }
     }
 }
@@ -414,7 +422,7 @@
     switch (self.direction) {
         case NHSpringDirectionUp:
         {
-            self.homeButtonView.autoresizingMask = UIViewAutoresizingFlexibleTopMargin;
+            self.homeButton.autoresizingMask = UIViewAutoresizingFlexibleTopMargin;
             
             CGRect frame = self.frame;
             frame.origin.y -= buttonHeight;
@@ -425,7 +433,7 @@
             
         case NHSpringDirectionDown:
         {
-            self.homeButtonView.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin;
+            self.homeButton.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin;
             
             CGRect frame = self.frame;
             frame.size.height += buttonHeight;
@@ -435,7 +443,7 @@
             
         case NHSpringDirectionLeft:
         {
-            self.homeButtonView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
+            self.homeButton.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
             
             CGRect frame = self.frame;
             frame.origin.x -= buttonWidth;
@@ -446,7 +454,7 @@
             
         case NHSpringDirectionRight:
         {
-            self.homeButtonView.autoresizingMask = UIViewAutoresizingFlexibleRightMargin;
+            self.homeButton.autoresizingMask = UIViewAutoresizingFlexibleRightMargin;
             
             CGRect frame = self.frame;
             frame.size.width += buttonWidth;
@@ -486,22 +494,30 @@
 #pragma mark -
 #pragma mark Setters/Getters
 
-- (void)setHomeButtonView:(UIView *)homeButtonView {
-    if (_homeButtonView != homeButtonView) {
-        _homeButtonView = homeButtonView;
-    }
-    
-    if ([_homeButtonView isDescendantOfView:self] == NO) {
-        [self addSubview:_homeButtonView];
-    }
-}
-
 - (NSArray *)buttons {
     return [self.subButtons copy];
 }
 
+
+
 #pragma mark -
 #pragma mark Touch Handling Methods
+
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+{
+    UIView *hitView = [super hitTest:point withEvent:event];
+    
+    if (hitView == self) {
+        if (_isCollapsed) {
+            return self;
+        } else {
+            return [self _subviewForPoint:point];
+        }
+    }
+    
+    return hitView;
+}
+
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
     [super touchesBegan:touches withEvent:event];
@@ -546,20 +562,7 @@
     [self _setTouchHighlighted:CGRectContainsPoint(self.frame, [touch locationInView:self])];
 }
 
-- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
-{
-    UIView *hitView = [super hitTest:point withEvent:event];
-    
-    if (hitView == self) {
-        if (_isCollapsed) {
-            return self;
-        } else {
-            return [self _subviewForPoint:point];
-        }
-    }
-    
-    return hitView;
-}
+
 
 #pragma mark -
 #pragma mark UIGestureRecognizer Delegate
@@ -573,6 +576,8 @@
     
     return NO;
 }
+
+
 
 
 @end

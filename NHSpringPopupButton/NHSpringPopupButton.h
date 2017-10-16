@@ -24,8 +24,6 @@ typedef NS_ENUM(NSUInteger, NHSpringDirection) {
 - (void)NHSpringPopupButtonDidExpand:(NHSpringPopupButton *)expandableView;
 - (void)NHSpringPopupButtonWillCollapse:(NHSpringPopupButton *)expandableView;
 - (void)NHSpringPopupButtonDidCollapse:(NHSpringPopupButton *)expandableView;
-
-
 - (void)NHSpringPopupButtonDidClickSubButton:(UIButton *)subButton;
 
 @end
@@ -35,7 +33,8 @@ typedef NS_ENUM(NSUInteger, NHSpringDirection) {
 @interface NHSpringPopupButton : UIView <UIGestureRecognizerDelegate>
 
 @property (nonatomic, weak, readonly) NSArray *buttons;
-@property (nonatomic, strong) UIView *homeButtonView;
+//@property (nonatomic, strong) UIView *homeButtonView;
+@property (nonatomic, strong) UIButton *homeButton;
 @property (nonatomic, readonly) BOOL isCollapsed;
 @property (nonatomic, weak) id <NHSpringPopupButtonDelegate> delegate;
 
